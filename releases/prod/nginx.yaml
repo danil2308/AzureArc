@@ -1,21 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
-  name: nginx-deployment
-  namespace: gitopstest
+  name: hello-arc
+  namespace: prod
 spec:
-  selector:
-    matchLabels:
-      app: nginx
-      namespace: gitopstest
-  replicas: 3 # tells deployment to run 2 pods matching the template
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
+  releaseName: hello-arc-prod
+  chart:
+    git: https://github.com/likamrat/hello_arc.git
+    path: charts/hello-arc
+    ref: master
+  values:
+    image:
+      repository: liorkamrat/hello-arc
+      tag: latest
+    replicaCount: 1
+    env:
+      name: MESSAGE
+      value: Azure Arc enabled K8s GitOps Demo22!
