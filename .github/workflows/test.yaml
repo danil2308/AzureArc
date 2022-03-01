@@ -25,14 +25,14 @@ jobs:
   #       with:
   #         # Fetches entire history, so we can analyze commits since last tag.
   #         fetch-depth: 0
-  #     - id: getting-eve-os-image-version
+  #     - id: eve-os-info
   #       run: |
   #         echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
   #         echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
-  #     - name: adding-eve-os-image-to-env
+  #     - name: env-mapping
   #       run: |
-  #         echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
-  #         echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+  #         echo "imageversion=${{ steps.eve-os-info.outputs.imageversion }}" >> $GITHUB_ENV
+  #         echo "imagerepository=${{ steps.eve-os-info.outputs.imagerepository }}" >> $GITHUB_ENV
   sandbox-build:
     timeout-minutes: 20
     runs-on: ubuntu-latest
@@ -76,40 +76,40 @@ jobs:
           PRERELEASE_SUFFIX: development
           DRY_RUN: true
       
-      - id: getting-eve-os-image-version-prod
+      - id: eve-os-info-prod
         if: github.ref == 'refs/heads/master'
         run: |
           echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/production-values.yaml)\n"
           echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/production-values.yaml)\n"
         env:
           ENV: sandbox
-      - name: adding-eve-os-image-to-env-prod
+      - name: env-mapping-prod
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
-          echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+          echo "imageversion=${{ steps.eve-os-info-prod.outputs.imageversion }}" >> $GITHUB_ENV
+          echo "imagerepository=${{ steps.eve-os-info-prod.outputs.imagerepository }}" >> $GITHUB_ENV
 
-      - id: getting-eve-os-image-version-nonprod
+      - id: eve-os-info-nonprod
         if: github.ref == 'refs/heads/release'
         run: |
           echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/nonprod-values.yaml)\n"
           echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/nonprod-values.yaml)\n"
-      - name: adding-eve-os-image-to-env-nonprod
+      - name: env-mapping-nonprod
         if: github.ref == 'refs/heads/release'
         run: |
-          echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
-          echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+          echo "imageversion=${{ steps.eve-os-info-nonprod.outputs.imageversion }}" >> $GITHUB_ENV
+          echo "imagerepository=${{ steps.eve-os-info-nonprod.outputs.imagerepository }}" >> $GITHUB_ENV
 
-      - id: getting-eve-os-image-version-sandbox
+      - id: eve-os-info-sandbox
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
         run: |
           echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
           echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
-      - name: adding-eve-os-image-to-env-sandbox
+      - name: env-mapping-sandbox
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
         run: |
-          echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
-          echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+          echo "imageversion=${{ steps.eve-os-info-sandbox.outputs.imageversion }}" >> $GITHUB_ENV
+          echo "imagerepository=${{ steps.eve-os-info-sandbox.outputs.imagerepository }}" >> $GITHUB_ENV
 
       - name: Docker Login to GitHub Container Registry
         run: |
