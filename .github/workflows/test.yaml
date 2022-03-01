@@ -79,10 +79,10 @@ jobs:
       - id: getting-eve-os-image-version-prod
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
-          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
+          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/production-values.yaml)\n"
+          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/production-values.yaml)\n"
         env:
-          ENV: "production"
+          ENV: sandbox
       - name: adding-eve-os-image-to-env-prod
         if: github.ref == 'refs/heads/master'
         run: |
@@ -92,10 +92,8 @@ jobs:
       - id: getting-eve-os-image-version-nonprod
         if: github.ref == 'refs/heads/release'
         run: |
-          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
-          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
-        env:
-          ENV: "nonprod"
+          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/nonprod-values.yaml)\n"
+          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/nonprod-values.yaml)\n"
       - name: adding-eve-os-image-to-env-nonprod
         if: github.ref == 'refs/heads/release'
         run: |
@@ -105,10 +103,8 @@ jobs:
       - id: getting-eve-os-image-version-sandbox
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
         run: |
-          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
-          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${ENV}-values.yaml)\n"
-        env:
-          ENV: "sandbox"
+          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
       - name: adding-eve-os-image-to-env-sandbox
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
         run: |
