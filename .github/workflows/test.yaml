@@ -12,7 +12,7 @@ on:
         required: false
 env:
   CONTAINER_REGISTRY_NAME: ghcr.io
-  EVE_OS_RELATIVE_LOCATION: gitops\EveOsImage
+  EVE_OS_RELATIVE_LOCATION: eveos
 
 jobs:
   sandbox-build:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "::set-output name=imageversion::$(yq -r '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+          echo "::set-output name=imageversion::$(yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
       - name: test2
         run: |
           echo ${{ steps.test.outputs.imageversion }}
