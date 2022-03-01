@@ -33,10 +33,11 @@ jobs:
         run: |
           echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
           echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+      - name: test
+        run: |
           echo $GITHUB_ENV
           echo "${{ env.imageversion }}"
           echo "${{ env.imagerepository }}"
-
 
 #   sandbox-build:
 #     timeout-minutes: 20
