@@ -16,24 +16,7 @@ env:
   EVE_OS_CONTAINER_REGISTRY: lfedge
 
 jobs:
-  # build:
-  #   timeout-minutes: 20
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-  #       with:
-  #         # Fetches entire history, so we can analyze commits since last tag.
-  #         fetch-depth: 0
-  #     - id: eve-os-info
-  #       run: |
-  #         echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
-  #         echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
-  #     - name: env-mapping
-  #       run: |
-  #         echo "imageversion=${{ steps.eve-os-info.outputs.imageversion }}" >> $GITHUB_ENV
-  #         echo "imagerepository=${{ steps.eve-os-info.outputs.imagerepository }}" >> $GITHUB_ENV
-  sandbox-build:
+  build-and-push:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
