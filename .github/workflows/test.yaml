@@ -19,6 +19,11 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          # Fetches entire history, so we can analyze commits since last tag.
+          fetch-depth: 0
       - name: test
         run: |
           echo "::set-output name=imageversion::$(yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
