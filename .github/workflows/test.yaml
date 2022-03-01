@@ -26,10 +26,11 @@ jobs:
           fetch-depth: 0
       - name: test
         run: |
-          echo "::set-output name=imageversion::$(yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+        #yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml
+        echo "::set-output name=imageversion::$(yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
       - name: test2
         run: |
-          echo ${{ steps.test.outputs.imageversion }}
+        echo ${{ steps.test.outputs.imageversion }}
   # sandbox-build:
   #   if: contains(github.event.inputs.tags, 'development') || github.ref == 'refs/heads/develop'
   #   timeout-minutes: 20
