@@ -1,0 +1,300 @@
+name: Pull down eve os image
+
+on:
+  push:
+    paths:
+      - 'eveos\**-values.yaml'
+
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Specify Tag (optional)"
+        required: false
+env:
+  CONTAINER_REGISTRY_NAME: ghcr.io
+  EVE_OS_RELATIVE_LOCATION: gitops\EveOsImage
+
+jobs:
+  sandbox-build:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          echo "::set-output name=imageversion::$(yq -r '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+      - name: test2
+        run: |
+          echo ${{ steps.test.outputs.imageversion }}
+  # sandbox-build:
+  #   if: contains(github.event.inputs.tags, 'development') || github.ref == 'refs/heads/develop'
+  #   timeout-minutes: 20
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #       with:
+  #         # Fetches entire history, so we can analyze commits since last tag.
+  #         fetch-depth: 0
+
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - name: Turnstyle
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       uses: softprops/turnstyle@v1
+  #       with:
+  #         same-branch-only: true
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Determine next tag
+  #       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release'
+  #       id: next_tag
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: prerelease
+  #         DRY_RUN: true
+
+  #     - name: Determine next tag
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       id: next_tag_dev
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: development
+  #         DRY_RUN: true
+      
+  #     - name: Verify expected WAF exists
+  #       run: |
+  #         echo "::set-output name=imageversion::$(yq -r '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${{ env.DEPLOYMENT_ENVIRONMENT }}-values.yaml)\n"
+      
+  #     - name: Docker Login to GitHub Container Registry
+  #       run: |
+  #         echo ${{ secrets.READ_WRITE_GITHUB_PACKAGES_PAT }} | docker login ${{ env.CONTAINER_REGISTRY_NAME }} --username ${{ secrets.READ_WRITE_GITHUB_PACKAGES_USER }} --password-stdin
+
+  #     # Build the Docker image tagged for develop(sandbox)
+  #     - name: Build the Docker image for sandbox
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=sandbox
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for pre-release(nonprod).
+  #     - name: Build the Docker image for pre-release
+  #       if: github.ref == 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=nonprod
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for release(production).
+  #     - name: Build the Docker image for release.
+  #       if: github.ref == 'refs/heads/master'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=production
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+
+  #     # If the branch has an environment, then we're creating a release...
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - uses: ./.github/actions/common-outputs
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       id: common
+
+  #     - name: Re-tag and push the Docker image
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       run: |
+  #         docker tag buildimage ${DOCKER_TAG}:${BUILD_VERSION}
+  #         docker push ${DOCKER_TAG}:${BUILD_VERSION}
+  #       env:
+  #         DOCKER_TAG: ${{ steps.common.outputs.container-registry-docker-tag }}
+  #         BUILD_VERSION: ${{ github.event.inputs.tags || steps.next_tag.outputs.new_tag || steps.next_tag_dev.outputs.new_tag }}
+  # nonprod-build:
+  #   if: contains(github.event.inputs.tags, 'prerelease') || github.ref == 'refs/heads/release'
+  #   timeout-minutes: 20
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #       with:
+  #         # Fetches entire history, so we can analyze commits since last tag.
+  #         fetch-depth: 0
+
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - name: Turnstyle
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       uses: softprops/turnstyle@v1
+  #       with:
+  #         same-branch-only: true
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Determine next tag
+  #       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release'
+  #       id: next_tag
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: prerelease
+  #         DRY_RUN: true
+
+  #     - name: Determine next tag
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       id: next_tag_dev
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: development
+  #         DRY_RUN: true
+      
+  #     - name: Verify expected WAF exists
+  #       run: |
+  #         echo "::set-output name=imageversion::$(yq -r '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${{ env.DEPLOYMENT_ENVIRONMENT }}-values.yaml)\n"
+      
+  #     - name: Docker Login to GitHub Container Registry
+  #       run: |
+  #         echo ${{ secrets.READ_WRITE_GITHUB_PACKAGES_PAT }} | docker login ${{ env.CONTAINER_REGISTRY_NAME }} --username ${{ secrets.READ_WRITE_GITHUB_PACKAGES_USER }} --password-stdin
+
+  #     # Build the Docker image tagged for develop(sandbox)
+  #     - name: Build the Docker image for sandbox
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=sandbox
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for pre-release(nonprod).
+  #     - name: Build the Docker image for pre-release
+  #       if: github.ref == 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=nonprod
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for release(production).
+  #     - name: Build the Docker image for release.
+  #       if: github.ref == 'refs/heads/master'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=production
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+
+  #     # If the branch has an environment, then we're creating a release...
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - uses: ./.github/actions/common-outputs
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       id: common
+
+  #     - name: Re-tag and push the Docker image
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       run: |
+  #         docker tag buildimage ${DOCKER_TAG}:${BUILD_VERSION}
+  #         docker push ${DOCKER_TAG}:${BUILD_VERSION}
+  #       env:
+  #         DOCKER_TAG: ${{ steps.common.outputs.container-registry-docker-tag }}
+  #         BUILD_VERSION: ${{ github.event.inputs.tags || steps.next_tag.outputs.new_tag || steps.next_tag_dev.outputs.new_tag }}
+  # production-build:
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+  #   timeout-minutes: 20
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #       with:
+  #         # Fetches entire history, so we can analyze commits since last tag.
+  #         fetch-depth: 0
+
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - name: Turnstyle
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       uses: softprops/turnstyle@v1
+  #       with:
+  #         same-branch-only: true
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Determine next tag
+  #       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release'
+  #       id: next_tag
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: prerelease
+  #         DRY_RUN: true
+
+  #     - name: Determine next tag
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       id: next_tag_dev
+  #       uses: anothrNick/github-tag-action@1.36.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         RELEASE_BRANCHES: master
+  #         # RELEASE_BRANCHES: main
+  #         PRERELEASE_SUFFIX: development
+  #         DRY_RUN: true
+      
+  #     - name: Verify expected WAF exists
+  #       run: |
+  #         echo "::set-output name=imageversion::$(yq -r '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/${{ env.DEPLOYMENT_ENVIRONMENT }}-values.yaml)\n"
+      
+  #     - name: Docker Login to GitHub Container Registry
+  #       run: |
+  #         echo ${{ secrets.READ_WRITE_GITHUB_PACKAGES_PAT }} | docker login ${{ env.CONTAINER_REGISTRY_NAME }} --username ${{ secrets.READ_WRITE_GITHUB_PACKAGES_USER }} --password-stdin
+
+  #     # Build the Docker image tagged for develop(sandbox)
+  #     - name: Build the Docker image for sandbox
+  #       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=sandbox
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for pre-release(nonprod).
+  #     - name: Build the Docker image for pre-release
+  #       if: github.ref == 'refs/heads/release'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=nonprod
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+  #     # Build the Docker image tagged for release(production).
+  #     - name: Build the Docker image for release.
+  #       if: github.ref == 'refs/heads/master'
+  #       run: |
+  #         docker build . --file ${{ env.DOCKER_FILE }} --tag buildimage --build-arg github_token=${{ secrets.READ_GITHUB_PACKAGES_PAT }} --build-arg configuration=production
+  #         docker run --name test_container buildimage echo test
+  #         docker cp test_container:/usr/src/app/angular-app/test ./test
+
+
+  #     # If the branch has an environment, then we're creating a release...
+  #     # We need a predictable tag version, so let's serialize the workflows from this point.
+  #     - uses: ./.github/actions/common-outputs
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       id: common
+
+  #     - name: Re-tag and push the Docker image
+  #       if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
+  #       run: |
+  #         docker tag buildimage ${DOCKER_TAG}:${BUILD_VERSION}
+  #         docker push ${DOCKER_TAG}:${BUILD_VERSION}
+  #       env:
+  #         DOCKER_TAG: ${{ steps.common.outputs.container-registry-docker-tag }}
+  #         BUILD_VERSION: ${{ github.event.inputs.tags || steps.next_tag.outputs.new_tag || steps.next_tag_dev.outputs.new_tag }}
