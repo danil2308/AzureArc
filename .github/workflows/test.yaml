@@ -27,8 +27,8 @@ jobs:
           fetch-depth: 0
       - id: getting-eve-os-image-version
         run: |
-          echo "::set-output name=imageversion::$(yq '.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
-          echo "::set-output name=imagerepository::$(yq '.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+          echo "::set-output name=imageversion::$(yq '.image.version' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
+          echo "::set-output name=imagerepository::$(yq '.image.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
       - name: adding-eve-os-image-to-env
         run: |
           echo imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }} >> $GITHUB_ENV
