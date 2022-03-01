@@ -31,8 +31,8 @@ jobs:
           echo "::set-output name=imagerepository::$(yq '.repository' ${{ env.EVE_OS_RELATIVE_LOCATION }}/sandbox-values.yaml)\n"
       - name: adding-eve-os-image-to-env
         run: |
-          echo imageversion=${{ steps.test.outputs.imageversion }} >> $GITHUB_ENV
-          echo imagerepository=${{ steps.test.outputs.imagerepository }} >> $GITHUB_ENV
+          echo imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }} >> $GITHUB_ENV
+          echo imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }} >> $GITHUB_ENV
           echo ${{ env.imageversion }}
           echo ${{ env.imagerepository }}
 
