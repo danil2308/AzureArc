@@ -1,0 +1,2 @@
+#Adjust this setting to specify which EVE-OS Image to pull from 
+version: "7.4.1-kvm-amd64"
