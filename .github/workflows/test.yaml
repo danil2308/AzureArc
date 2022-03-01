@@ -33,6 +33,7 @@ jobs:
         run: |
           echo "imageversion=${{ steps.getting-eve-os-image-version.outputs.imageversion }}" >> $GITHUB_ENV
           echo "imagerepository=${{ steps.getting-eve-os-image-version.outputs.imagerepository }}" >> $GITHUB_ENV
+          echo "$GITHUB_ENV"
           echo "${{ env.imageversion }}"
           echo "${{ env.imagerepository }}"
 
