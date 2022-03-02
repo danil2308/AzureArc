@@ -27,14 +27,6 @@ jobs:
         with:
           # Fetches entire history, so we can analyze commits since last tag.
           fetch-depth: 0
-
-      - name: Checkout RA Action Repo
-        uses: actions/checkout@v2
-        with:
-          repository: Rockwell-Automation-Inc/actions
-          ref: v9.3
-          token: ${{ secrets.READ_GITHUB_ACTIONS_PAT }}
-          path: .github/actions
           
       # We need a predictable tag version, so let's serialize the workflows from this point.
       - name: Turnstyle
