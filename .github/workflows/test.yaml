@@ -135,7 +135,7 @@ jobs:
 
       # If the branch has an environment, then we're creating a release...
       # We need a predictable tag version, so let's serialize the workflows from this point.
-      - uses: .github/workflows/common-outputs.yaml
+      - uses: ./.github/workflows/common-outputs.yaml
         if: github.event.inputs.tags || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/develop'
         id: common
 
