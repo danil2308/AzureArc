@@ -2,3 +2,4 @@
 image:
   repository: lfedge-nonprod
   version: "7.4.1-kvm-amd64"
+  name: eve
