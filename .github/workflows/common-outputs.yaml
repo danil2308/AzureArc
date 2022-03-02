@@ -1,0 +1,32 @@
+name: 'Common Outputs'
+description: 'Create common outputs that can be re-used throuhgout the workflow.'
+author: 'yibble'
+
+branding: 
+  icon: 'external-link'
+  color: 'gray-dark'
+
+outputs:
+  container-registry-docker-tag: 
+    description: "GitHub Container Registry tag relating to repository."
+    value: ${{ steps.container-registry-docker-tag.outputs.tag }}
+  package-registry-docker-tag: 
+    description: "GitHub Package Registry tag relating to repository."
+    value: ${{ steps.package-registry-docker-tag.outputs.tag }}
+
+runs:
+  using: "composite"
+  steps: 
+    - id: container-registry-docker-tag
+      run: |
+        echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
+      shell: bash
+      env:
+        URL: ghcr.io
+
+    - id: package-registry-docker-tag
+      run: |
+        echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')/$(echo ${GITHUB_REPOSITORY#Rockwell-Automation-Inc/} | tr '[:upper:]' '[:lower:]')
+      shell: bash
+      env:
+        URL: docker.pkg.github.com
