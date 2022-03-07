@@ -1,32 +1,97 @@
-name: 'Common Outputs'
-description: 'Create common outputs that can be re-used throuhgout the workflow.'
-author: 'yibble'
+# name: 'Common Outputs'
+# description: 'Create common outputs that can be re-used throuhgout the workflow.'
+# author: 'yibble'
 
-branding: 
-  icon: 'external-link'
-  color: 'gray-dark'
+# branding: 
+#   icon: 'external-link'
+#   color: 'gray-dark'
 
-outputs:
-  container-registry-docker-tag: 
-    description: "GitHub Container Registry tag relating to repository."
-    value: ${{ steps.container-registry-docker-tag.outputs.tag }}
-  package-registry-docker-tag: 
-    description: "GitHub Package Registry tag relating to repository."
-    value: ${{ steps.package-registry-docker-tag.outputs.tag }}
+# outputs:
+#   container-registry-docker-tag: 
+#     description: "GitHub Container Registry tag relating to repository."
+#     value: ${{ steps.container-registry-docker-tag.outputs.tag }}
+#   package-registry-docker-tag: 
+#     description: "GitHub Package Registry tag relating to repository."
+#     value: ${{ steps.package-registry-docker-tag.outputs.tag }}
 
-runs:
-  using: "composite"
-  steps: 
-    - id: container-registry-docker-tag
-      run: |
-        echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
-      shell: bash
-      env:
-        URL: ghcr.io
+# runs:
+#   using: "composite"
+#   steps: 
+#     - id: container-registry-docker-tag
+#       run: |
+#         echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
+#       shell: bash
+#       env:
+#         URL: ghcr.io
 
-    - id: package-registry-docker-tag
-      run: |
-        echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')/$(echo ${GITHUB_REPOSITORY#Rockwell-Automation-Inc/} | tr '[:upper:]' '[:lower:]')
-      shell: bash
-      env:
-        URL: docker.pkg.github.com
+#     - id: package-registry-docker-tag
+#       run: |
+#         echo ::set-output name=tag::${URL}/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')/$(echo ${GITHUB_REPOSITORY#Rockwell-Automation-Inc/} | tr '[:upper:]' '[:lower:]')
+#       shell: bash
+#       env:
+#         URL: docker.pkg.github.com
+
+name: Dev
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request_target:
+    branches:
+      - release/**
+      - hotfix/**
+      - develop
+      - main
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - unlocked
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        shell: bash
+        run: |
+          echo "checks"
+  build:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push' || github.ref == 'refs/heads/release' && github.event_name == 'push' || github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: build
+        shell: bash
+        run: |
+          echo "build"
+  sandbox:
+    if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: sandbox
+        shell: bash
+        run: |
+          echo "sandbox"
+  nonprod:
+    if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: nonprod
+        shell: bash
+        run: |
+          echo "nonprod"
+  prod:
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: prod
+        shell: bash
+        run: |
+          echo "prod"
+
