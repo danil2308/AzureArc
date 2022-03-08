@@ -18,7 +18,7 @@ on:
       - reopened
       - unlocked
 env:
-  HELM_CHART_RELATIVE_LOCATION: gitops/images/eve
+  HELM_CHART_RELATIVE_LOCATION: gitops/images/eve/
   TEST_RELEASE: eve
 
 jobs:
