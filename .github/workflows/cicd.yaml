@@ -34,30 +34,161 @@ jobs:
         shell: bash
         run: |
           echo "build"
-  sandbox:
+  create-sandbox-release:
     if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+    needs: [build]   
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: sandbox
-        shell: bash
+      - name: Download all workflow artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+
+      - name: Create Release Artifact
         run: |
-          echo "sandbox"
-  nonprod:
+          zip -r ../${{ env.EVE_OS_RELATIVE_LOCATION }}.zip ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+      - name: Checkout repository with entire history
+        uses: actions/checkout@v2
+        with:
+          # Fetches entire history, so we can analyze commits since last tag.
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: master
+          PRERELEASE_SUFFIX: development
+          DRY_RUN: false
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          release_name: Release ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          body: Change logs temporarily disabled.
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_name: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_content_type: application/zip
+
+  create-nonprod-release:
     if: ${{ github.ref == 'refs/heads/release' && github.event_name == 'push' }}
+    needs: [build]   
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: nonprod
-        shell: bash
+      - name: Download all workflow artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+
+      - name: Create Release Artifact
         run: |
-          echo "nonprod"
-  prod:
+          zip -r ../${{ env.EVE_OS_RELATIVE_LOCATION }}.zip ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+      - name: Checkout repository with entire history
+        uses: actions/checkout@v2
+        with:
+          # Fetches entire history, so we can analyze commits since last tag.
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: master
+          PRERELEASE_SUFFIX: prerelease
+          DRY_RUN: false
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          release_name: Release ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          body: Change logs temporarily disabled.
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_name: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_content_type: application/zip
+
+  create-production-release:
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    needs: [build]   
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: prod
-        shell: bash
+      - name: Download all workflow artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+
+      - name: Create Release Artifact
         run: |
-          echo "prod"
+          zip -r ../${{ env.EVE_OS_RELATIVE_LOCATION }}.zip ${{ env.EVE_OS_RELATIVE_LOCATION }}
+      - name: Checkout repository with entire history
+        uses: actions/checkout@v2
+        with:
+          # Fetches entire history, so we can analyze commits since last tag.
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: master
+          PRERELEASE_SUFFIX: prerelease
+          DRY_RUN: false
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          release_name: Release ${{ steps.create_tag.outputs.new_tag || github.event.inputs.tags }}
+          body: Change logs temporarily disabled.
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_name: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
+          asset_content_type: application/zip
