@@ -170,7 +170,7 @@ jobs:
 
       - name: Create Release Artifact
         run: |
-          zip -r ${{ env.HELM_CHART_RELATIVE_LOCATION }} ${{ env.TEST_RELEASE }}
+          zip -r ${{ env.HELM_CHART_RELATIVE_LOCATION }}.zip ${{ env.TEST_RELEASE }}
       - name: Checkout repository with entire history
         uses: actions/checkout@v2
         with:
