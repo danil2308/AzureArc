@@ -35,6 +35,16 @@ jobs:
         shell: bash
         run: |
           echo "build"
+
+      - name: Archive eve-os artifacts
+        if: github.event.inputs.tags || 
+            github.ref == 'refs/heads/main' || 
+            github.ref == 'refs/heads/release' || 
+            github.ref == 'refs/heads/develop'
+        uses: actions/upload-artifact@v2
+        with:
+          name: eve-charts
+          path: ${{ env.HELM_CHART_RELATIVE_LOCATION }}
   create-sandbox-release:
     if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
     needs: [build]   
