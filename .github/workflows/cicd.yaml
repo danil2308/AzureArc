@@ -19,6 +19,7 @@ on:
       - unlocked
 env:
   HELM_CHART_RELATIVE_LOCATION: charts/
+
 jobs:
   checks:
     runs-on: ubuntu-latest
