@@ -31,6 +31,8 @@ jobs:
         shell: bash
         run: |
           echo "checks"
+          echo ${{ github.event.repository.name }}
+
   build:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push' || github.ref == 'refs/heads/release' && github.event_name == 'push' || github.ref == 'refs/heads/main' && github.event_name == 'push'
