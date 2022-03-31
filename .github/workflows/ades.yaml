@@ -46,4 +46,7 @@ jobs:
         shell: bash
         run: |
           pwd
+          echo "blank space"
+          echo "blank space"
+          echo "blank space"
           ls -lR
