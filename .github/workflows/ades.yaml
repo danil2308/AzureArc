@@ -1,0 +1,49 @@
+name: Dev
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request_target:
+    branches:
+      - release/**
+      - hotfix/**
+      - develop
+      - main
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - unlocked
+  workflow_dispatch:
+
+env:
+  HELM_CHART_RELATIVE_LOCATION: gitops/images/eve
+  APP_NAME: eve
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        shell: bash
+        run: |
+          echo "checks"
+          echo ${{ github.event.repository.name }}
+
+  build:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push' || github.ref == 'refs/heads/release' && github.event_name == 'push' || github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          # Fetches entire history, so we can analyze commits since last tag.
+          fetch-depth: 0
+      - name: build
+        shell: bash
+        run: |
+          pwd
+          ls -lR
