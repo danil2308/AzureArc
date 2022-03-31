@@ -17,6 +17,8 @@ on:
       - opened
       - reopened
       - unlocked
+  workflow_dispatch:
+
 env:
   HELM_CHART_RELATIVE_LOCATION: gitops/images/eve
   APP_NAME: eve
@@ -37,6 +39,7 @@ jobs:
         shell: bash
         run: |
           echo "build"
+          echo ${{ github.event.repository.name }}
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
