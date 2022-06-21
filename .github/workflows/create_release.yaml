@@ -45,6 +45,13 @@ on:
       - main
       - release
       - develop
+  pull_request_target:
+    branches:
+      - release/**
+      - hotfix/**
+      - develop
+      - main
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
