@@ -58,6 +58,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
-        RELEASE_BRANCHES: -main
+        RELEASE_BRANCHES: 'main'
         PRERELEASE_SUFFIX: prerelease
         DRY_RUN: false
