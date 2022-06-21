@@ -67,5 +67,4 @@ jobs:
         DEFAULT_BUMP: patch
         RELEASE_BRANCHES: main
         PRERELEASE_SUFFIX: prerelease
-        DRY_RUN: false
-        CURRENT_BRANCH: ${GITHUB_REF#refs/heads/
+        DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
