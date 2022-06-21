@@ -42,7 +42,9 @@ name: Bump version
 on:
   push:
     branches:
-      - master
+      - main
+      - release
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
