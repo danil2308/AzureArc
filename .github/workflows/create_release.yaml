@@ -58,11 +58,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
-<<<<<<< Updated upstream
         RELEASE_BRANCHES: HEAD
-=======
-        RELEASE_BRANCHES: main
->>>>>>> Stashed changes
         PRERELEASE_SUFFIX: prerelease
         DRY_RUN: false
         current_branch: ${GITHUB_REF#refs/heads/
