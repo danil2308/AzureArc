@@ -52,13 +52,13 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: '0'
-        # ref: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.sha) || github.sha }}
+        ref: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.sha) || github.sha }}
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.39.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
-        RELEASE_BRANCHES: HEAD
+        RELEASE_BRANCHES: main
         PRERELEASE_SUFFIX: prerelease
         DRY_RUN: false
         current_branch: ${GITHUB_REF#refs/heads/
