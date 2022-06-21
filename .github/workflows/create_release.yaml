@@ -56,4 +56,7 @@ jobs:
       uses: anothrNick/github-tag-action@1.36.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_BRANCHES : main
+        DEFAULT_BUMP: patch
+        RELEASE_BRANCHES: main
+        PRERELEASE_SUFFIX: prerelease
+        DRY_RUN: false
