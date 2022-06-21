@@ -61,4 +61,4 @@ jobs:
         RELEASE_BRANCHES: main
         PRERELEASE_SUFFIX: prerelease
         DRY_RUN: false
-        current_branch: ${GITHUB_REF#refs/heads/
+        CURRENT_BRANCH: ${GITHUB_REF#refs/heads/
