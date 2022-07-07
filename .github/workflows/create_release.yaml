@@ -45,6 +45,13 @@ on:
       - main
       - release
       - develop
+  pull_request_target:
+    branches:
+      - release/**
+      - hotfix/**
+      - develop
+      - main
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,12 +59,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: '0'
-        ref: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.sha) || github.sha }}
+        ref: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.sha) || github.ref_name }}
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.39.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
-        RELEASE_BRANCHES: 'main'
+        RELEASE_BRANCHES: main
         PRERELEASE_SUFFIX: prerelease
-        DRY_RUN: false
+        DRY_RUN: ${{ github.ref != 'refs/heads/2' }}
