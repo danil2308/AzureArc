@@ -45,7 +45,7 @@ jobs:
       - name: build
         shell: bash
         run: |
-          DOCKER_COMMAND='bash -c "(echo "inside docker" && echo "2")"'
+          DOCKER_COMMAND='/bin/bash -c "(echo "inside docker" && echo "2")"'
           hostname
           docker run -i  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu "$DOCKER_COMMAND"
           hostname
