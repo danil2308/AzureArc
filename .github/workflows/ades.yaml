@@ -45,8 +45,9 @@ jobs:
       - name: build
         shell: bash
         run: |
-          pwd
-          echo "blank space"
+          hostname
+          docker run -ti  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu /bin/bash
+          hostname
           echo "blank space"
           echo "blank space"
           ls -lR
