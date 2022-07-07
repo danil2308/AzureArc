@@ -63,8 +63,7 @@ jobs:
         NODE_ENV: development
       ports:
         - 80
-      volumes:
-        - /dev/loop2:/dev/loop2
+      options: --cap-add CAP_MKNOD
     steps:
       - name: Download all workflow artifacts
         uses: actions/download-artifact@v2
