@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           mkdir ./eve/
-          docker run lfedge/eve:latest  installer_raw > mkdir ./eve/ades.raw 
+          docker run lfedge/eve:7.4.1-kvm-amd64 installer_raw > ./eve/ades.raw 
           echo "blank space"
           echo "blank space"
       - name: Archive eve-os artifacts
