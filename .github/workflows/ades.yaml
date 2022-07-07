@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           hostname
-          docker run -ti  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu /bin/bash
+          docker run -i  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu /bin/bash
           hostname
           echo "blank space"
           echo "blank space"
