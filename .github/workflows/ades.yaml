@@ -45,9 +45,15 @@ jobs:
       - name: build
         shell: bash
         run: |
-          hostname
+          mkdir ./eve/
+          docker run lfedge/eve:7.4.1-kvm-amd64 installer_raw > mkdir ./eve/ades.raw 
           echo "blank space"
           echo "blank space"
+      - name: Archive eve-os artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: eve-charts
+          path: ./eve/
   container-test-job:
     runs-on: ubuntu-latest
     container:
@@ -59,6 +65,10 @@ jobs:
       volumes:
         - /dev/loop2:/dev/loop2
     steps:
+      - name: Download all workflow artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ./eve/
       - name: Check for dockerenv file
         run: |
           hostname
