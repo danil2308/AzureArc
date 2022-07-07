@@ -45,9 +45,10 @@ jobs:
       - name: build
         shell: bash
         run: |
+          DOCKER_COMMAND='bash -c "(echo "inside docker" && echo "2")"'
           hostname
-          docker run -i  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu /bin/bash
+          docker run -i  --privileged --device=/dev/loop0:/dev/loop0 -v $(pwd):/tmp ubuntu "$DOCKER_COMMAND"
           hostname
           echo "blank space"
           echo "blank space"
-          ls -lR
+
