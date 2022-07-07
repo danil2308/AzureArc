@@ -72,5 +72,8 @@ jobs:
           path: ./eve/
       - name: Check for dockerenv file
         run: |
-          hostname
-          echo "hola dentro de container"
+          loop_device_prod=$(losetup -f -P "./eve/eve-charts/ades.raw" --show)
+          eve_partition_prod=$loop_device_prod'p4'
+          mkdir ./mount_prod
+          mount $eve_partition_prod ./mount_prod
+          cat /mount_prod/server
