@@ -63,7 +63,7 @@ jobs:
         NODE_ENV: development
       ports:
         - 80
-      options: --cap-add CAP_MKNOD
+      options: --cap-add SYS_ADMIN
     steps:
       - name: Download all workflow artifacts
         uses: actions/download-artifact@v2
