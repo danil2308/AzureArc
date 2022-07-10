@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: node:14.16
+      image: ubuntu
       env:
         NODE_ENV: development
       ports:
