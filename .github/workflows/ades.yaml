@@ -73,6 +73,7 @@ jobs:
         run: |
           loop_device_prod=$(losetup -f -P "./eve/eve-charts/ades.raw" --show)
           lsblk -f
+          echo $loop_device_prod
           eve_partition_prod=$loop_device_prod'p4'
           mkdir ./mount_prod
           mount $eve_partition_prod ./mount_prod
