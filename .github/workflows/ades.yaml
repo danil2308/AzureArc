@@ -71,10 +71,8 @@ jobs:
           path: ./eve/
       - name: Check for dockerenv file
         run: |
-          lsblk -f
-          losetup -f -P "./eve/eve-charts/ades.raw"
-          lsblk -f
-          # eve_partition_prod=$loop_device_prod'p4'
-          # mkdir ./mount_prod
-          # mount $eve_partition_prod ./mount_prod
-          # cat /mount_prod/server
+          loop_device_prod=$(sudo losetup -f -P "./eve/${{ env.APP_NAME }}_prod:$BUILD_VERSION.iso" --show)
+          eve_partition_prod=$loop_device_prod'p4'
+          mkdir ./mount_prod
+          mount $eve_partition_prod ./mount_prod
+          cat /mount_prod/server
