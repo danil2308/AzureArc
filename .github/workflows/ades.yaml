@@ -79,4 +79,4 @@ jobs:
           eve_partition_prod=$loop_device_prod'p4'
           mkdir ./mount_prod
           sleep  10 && mount $loop_device_prod'p4' ./mount_prod
-          ls /mount_prod/
+          ls ./mount_prod/
