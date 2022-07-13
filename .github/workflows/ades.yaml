@@ -62,7 +62,7 @@ jobs:
       env:
         NODE_ENV: development
       volumes:
-        - /dev/loop3:/dev/loop3
+        - /dev:/dev
       ports:
         - 80
       options: --cap-add SYS_ADMIN --privileged
